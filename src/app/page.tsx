@@ -61,7 +61,7 @@ export default function Main() {
                 }, {
                     x: result.cornerPoints[2].x + 25,
                     y: result.cornerPoints[2].y + 25
-                }])})`;
+                }], videoElement.style.transform.includes('scaleX(-1)'))}`;
                 codeTrackerElement.style.transform = transformMatrix;
                 codeTrackerElement.style.webkitTransform = transformMatrix;
 
@@ -141,7 +141,7 @@ export default function Main() {
             }
         });
 
-        function generateTransformMatrix(cornerPoints: [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }]) {
+        function generateTransformMatrix(cornerPoints: [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }], invertX = false) {
             if (videoElement === null || !(videoElement instanceof HTMLVideoElement)) {
                 return '1,0,0,0,1,0,0,0,1';
             }
@@ -153,15 +153,19 @@ export default function Main() {
             if (videoElement.videoWidth / videoElement.videoHeight > videoElement.offsetWidth / videoElement.offsetHeight) {
                 const scale = videoElement.offsetHeight / videoElement.videoHeight;
                 cornerPoints = cornerPoints.map((p) => ({
-                    x: videoElement.offsetWidth - (p.x - (videoElement.videoWidth - videoElement.offsetWidth / scale) / 2) * scale,
+                    x: (p.x - (videoElement.videoWidth - videoElement.offsetWidth / scale) / 2) * scale,
                     y: p.y * scale
                 })) as [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }];
             } else {
                 const scale = videoElement.offsetWidth / videoElement.videoWidth;
                 cornerPoints = cornerPoints.map((p) => ({
-                    x: videoElement.offsetWidth - p.x * scale,
+                    x: p.x * scale,
                     y: (p.y - (videoElement.videoHeight - videoElement.offsetHeight / scale) / 2) * scale
                 })) as [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }];
+            }
+
+            if (invertX) {
+                cornerPoints = cornerPoints.map((p) => ({ x: videoElement.offsetWidth - p.x, y: p.y })) as [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }];
             }
 
             function multiply9x9(a: [number, number, number, number, number, number, number, number, number],
