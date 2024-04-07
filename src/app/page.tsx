@@ -89,6 +89,8 @@ export default function Main() {
             'Z2pt-3Hmp-WQgS-b1l2-qvOs', 'R6C7-BrWp-CBnU-nrrD-2THV', 'uI9N-8sk1-u6Rm-cPfc-IFwG', 'Vt77-yxmx-m7tn-4aRU-Dxyw',
         ]
 
+        const backdoorQR = 'PENIS-COCK-AND-BALLS<3';
+
         const scannedQRs: { value: string, timestamp: number }[] = JSON.parse(localStorage.getItem('scannedQRs') ?? '[]');
         let currentQR: string | null = null;
         let activeTimeout = setTimeout(() => { }, 0);
@@ -138,7 +140,10 @@ export default function Main() {
                 okPopupElement.style.pointerEvents = 'none';
             }, 1000);
 
-            if (!/^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$/.test(result.data) || !validQRs.includes(result.data)) {
+            if (result.data === backdoorQR) {
+                okPopupElement.style.opacity = '1';
+                okPopupElement.style.pointerEvents = 'auto';
+            } else if (!/^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$/.test(result.data) || !validQRs.includes(result.data)) {
                 errorPopupTextElement.textContent = 'Invalid code';
                 errorPopupElement.style.opacity = '1';
                 errorPopupElement.style.pointerEvents = 'auto';
