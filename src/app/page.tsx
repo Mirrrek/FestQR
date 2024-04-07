@@ -245,6 +245,18 @@ export default function Main() {
             setFullscreen(document.fullscreenElement !== null);
         });
 
+        window.addEventListener('unhandledrejection', (event) => {
+            if (event.reason instanceof Error && event.reason.message === 'The play() request was interrupted by a new load request. https://goo.gl/LdLk22') {
+                setReset(!reset);
+            } else {
+                alert(`An unexpected error occurred.\n\n${event.reason instanceof Error ? `${event.reason.name}: ${event.reason.message}` : event.reason}`);
+            }
+        });
+
+        window.addEventListener('error', (event) => {
+            alert(`An unexpected error occurred.\n\n${event.message}`);
+        });
+
         return () => {
             scanner.destroy();
         }
