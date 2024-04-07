@@ -6,6 +6,7 @@ import styles from '@/styles/page.module.css';
 
 export default function Main() {
     const videoElementID = useId();
+    const codeTrackerElementID = useId();
     const okPopupElementID = useId();
     const errorPopupElementID = useId();
     const errorPopupTextElementID = useId();
@@ -15,12 +16,17 @@ export default function Main() {
 
     useEffect(() => {
         const videoElement = document.getElementById(videoElementID);
+        const codeTrackerElement = document.getElementById(codeTrackerElementID);
         const okPopupElement = document.getElementById(okPopupElementID);
         const errorPopupElement = document.getElementById(errorPopupElementID);
         const errorPopupTextElement = document.getElementById(errorPopupTextElementID);
 
         if (videoElement === null || !(videoElement instanceof HTMLVideoElement)) {
             throw new Error('Video element not found');
+        }
+
+        if (codeTrackerElement === null || !(codeTrackerElement instanceof HTMLDivElement)) {
+            throw new Error('Code tracker element not found');
         }
 
         if (okPopupElement === null || !(okPopupElement instanceof HTMLDivElement)) {
@@ -42,9 +48,27 @@ export default function Main() {
 
         const scanner = new QrScanner(videoElement, (result) => {
             if (currentQR === result.data) {
+                codeTrackerElement.style.opacity = '1';
+                const transformMatrix = `matrix3d(${generateTransformMatrix([{
+                    x: result.cornerPoints[0].x - 25,
+                    y: result.cornerPoints[0].y - 25
+                }, {
+                    x: result.cornerPoints[1].x + 25,
+                    y: result.cornerPoints[1].y - 25
+                }, {
+                    x: result.cornerPoints[3].x - 25,
+                    y: result.cornerPoints[3].y + 25
+                }, {
+                    x: result.cornerPoints[2].x + 25,
+                    y: result.cornerPoints[2].y + 25
+                }])})`;
+                codeTrackerElement.style.transform = transformMatrix;
+                codeTrackerElement.style.webkitTransform = transformMatrix;
+
                 clearTimeout(activeTimeout);
                 activeTimeout = setTimeout(() => {
                     currentQR = null;
+                    codeTrackerElement.style.opacity = '0';
                     errorPopupElement.style.opacity = '0';
                     errorPopupElement.style.pointerEvents = 'none';
                     okPopupElement.style.opacity = '0';
@@ -60,6 +84,7 @@ export default function Main() {
 
             activeTimeout = setTimeout(() => {
                 currentQR = null;
+                codeTrackerElement.style.opacity = '0';
                 errorPopupElement.style.opacity = '0';
                 errorPopupElement.style.pointerEvents = 'none';
                 okPopupElement.style.opacity = '0';
@@ -116,6 +141,100 @@ export default function Main() {
             }
         });
 
+        function generateTransformMatrix(cornerPoints: [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }]) {
+            if (videoElement === null || !(videoElement instanceof HTMLVideoElement)) {
+                return '1,0,0,0,1,0,0,0,1';
+            }
+
+            if (codeTrackerElement === null || !(codeTrackerElement instanceof HTMLDivElement)) {
+                return '1,0,0,0,1,0,0,0,1';
+            }
+
+            if (videoElement.videoWidth / videoElement.videoHeight > videoElement.offsetWidth / videoElement.offsetHeight) {
+                const scale = videoElement.offsetHeight / videoElement.videoHeight;
+                cornerPoints = cornerPoints.map((p) => ({
+                    x: videoElement.offsetWidth - (p.x - (videoElement.videoWidth - videoElement.offsetWidth / scale) / 2) * scale,
+                    y: p.y * scale
+                })) as [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }];
+            } else {
+                const scale = videoElement.offsetWidth / videoElement.videoWidth;
+                cornerPoints = cornerPoints.map((p) => ({
+                    x: videoElement.offsetWidth - p.x * scale,
+                    y: (p.y - (videoElement.videoHeight - videoElement.offsetHeight / scale) / 2) * scale
+                })) as [{ x: number, y: number }, { x: number, y: number }, { x: number, y: number }, { x: number, y: number }];
+            }
+
+            function multiply9x9(a: [number, number, number, number, number, number, number, number, number],
+                b: [number, number, number, number, number, number, number, number, number]):
+                [number, number, number, number, number, number, number, number, number] {
+                return [
+                    a[0] * b[0] + a[1] * b[3] + a[2] * b[6],
+                    a[0] * b[1] + a[1] * b[4] + a[2] * b[7],
+                    a[0] * b[2] + a[1] * b[5] + a[2] * b[8],
+                    a[3] * b[0] + a[4] * b[3] + a[5] * b[6],
+                    a[3] * b[1] + a[4] * b[4] + a[5] * b[7],
+                    a[3] * b[2] + a[4] * b[5] + a[5] * b[8],
+                    a[6] * b[0] + a[7] * b[3] + a[8] * b[6],
+                    a[6] * b[1] + a[7] * b[4] + a[8] * b[7],
+                    a[6] * b[2] + a[7] * b[5] + a[8] * b[8]
+                ]
+            }
+
+            function multiply9x3(m: [number, number, number, number, number, number, number, number, number],
+                v: [number, number, number]): [number, number, number] {
+                return [
+                    m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
+                    m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
+                    m[6] * v[0] + m[7] * v[1] + m[8] * v[2]
+                ]
+            }
+
+            function adjugate(m: [number, number, number, number, number, number, number, number, number]):
+                [number, number, number, number, number, number, number, number, number] {
+                return [
+                    m[4] * m[8] - m[5] * m[7],
+                    m[2] * m[7] - m[1] * m[8],
+                    m[1] * m[5] - m[2] * m[4],
+                    m[5] * m[6] - m[3] * m[8],
+                    m[0] * m[8] - m[2] * m[6],
+                    m[2] * m[3] - m[0] * m[5],
+                    m[3] * m[7] - m[4] * m[6],
+                    m[1] * m[6] - m[0] * m[7],
+                    m[0] * m[4] - m[1] * m[3]
+                ]
+            }
+
+            function basisToPoints(p1: { x: number, y: number }, p2: { x: number, y: number }, p3: { x: number, y: number }, p4: { x: number, y: number }):
+                [number, number, number, number, number, number, number, number, number] {
+                const m: [number, number, number, number, number, number, number, number, number] = [
+                    p1.x, p2.x, p3.x,
+                    p1.y, p2.y, p3.y,
+                    1, 1, 1
+                ]
+                const v = multiply9x3(adjugate(m), [p4.x, p4.y, 1]);
+                return multiply9x9(m, [v[0], 0, 0, 0, v[1], 0, 0, 0, v[2]]);
+            }
+
+            const result = multiply9x9(
+                basisToPoints(
+                    cornerPoints[0],
+                    cornerPoints[1],
+                    cornerPoints[2],
+                    cornerPoints[3]
+                ),
+                adjugate(
+                    basisToPoints(
+                        { x: 0, y: 0 },
+                        { x: codeTrackerElement.offsetWidth, y: 0 },
+                        { x: 0, y: codeTrackerElement.offsetHeight },
+                        { x: codeTrackerElement.offsetWidth, y: codeTrackerElement.offsetHeight }
+                    )
+                )
+            );
+
+            return [result[0], result[3], 0, result[6], result[1], result[4], 0, result[7], 0, 0, 1, 0, result[2], result[5], 0, result[8]].join(',');
+        }
+
         setTimeout(() => { scanner.start().catch(() => { }) }, 500);
 
         window.addEventListener('resize', () => {
@@ -129,7 +248,7 @@ export default function Main() {
         return () => {
             scanner.destroy();
         }
-    }, [videoElementID, okPopupElementID, errorPopupElementID, errorPopupTextElementID, reset]);
+    }, [videoElementID, codeTrackerElementID, okPopupElementID, errorPopupElementID, errorPopupTextElementID, reset]);
 
     return <main className={styles.main}>
         <div className={styles.controls}>
@@ -150,6 +269,13 @@ export default function Main() {
         </div>
         <div className={styles.videoContainer}>
             <video playsInline id={videoElementID} className={styles.video}></video>
+            <div id={codeTrackerElementID} className={styles.codeTracker}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                    <g fill="#f0f0f0">
+                        <path d="M0 30L0 60A7.5 7.5 0 0 0 15 60L15 30A15 15 0 0 1 30 15L60 15A7.5 7.5 0 0 0 60 0L30 0A30 30 0 0 0 0 30ZM200 170L200 140A7.5 7.5 0 0 0 185 140L185 170A15 15 0 0 1 170 185L140 185A7.5 7.5 0 0 0 140 200L170 200A30 30 0 0 0 200 170Z" />
+                    </g>
+                </svg>
+            </div>
             <div id={okPopupElementID} className={styles.popup} style={{ opacity: 0 }}>
                 <svg xmlns='http://www.w3.org/2000/svg' width={128} height={128} viewBox='0 0 64 64' className={styles.popupIcon}>
                     <circle cx='32' cy='32' r='30' fill='#43a047' />
