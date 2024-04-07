@@ -41,7 +41,54 @@ export default function Main() {
             throw new Error('Error popup text element not found');
         }
 
-        const validQRs = ['TEST-TEXT-ABCD-1234-5678', '5678-1234-5678-1234-5678', '1234-5678-1234-5678-5678', '5678-1234-5678-1234-1234'];
+        const validQRs = [
+            'KSIb-W1pw-pans-zynI-RbLa', '9Oa9-OSZe-yKzk-TLo8-2xIb', 'dpKF-g985-YLGZ-U5Cw-0VUh', 'OPXR-gXmK-mBiF-Nzjk-KqCj',
+            'NLSM-zgXG-ilsF-2X4x-4ixY', 'nAcP-KKQN-xd4k-TOTV-U7yh', 'm6GW-mIN7-k1K6-moye-Vp15', 'I3is-2QtC-MRLg-sTTY-xRox',
+            'Qfbp-L8i4-7G59-zx5y-I8DF', 'klHe-gJJn-6wUS-7cBJ-Ym59', 'V0UD-dNy5-eatF-p8jf-Xlb0', 'aa2z-CVvn-RiAY-Y6NO-fMAt',
+            'RX8w-IVJv-XWLe-SeBq-K3z0', '91vU-YDbX-ub8p-dShq-qVcS', 'MfqQ-nRZv-iOQ1-PFAH-2wGA', 'tj4s-g6Qn-wMTL-juYX-wltf',
+            'WZP2-qBkB-xt7J-fuaG-mQSr', 'wgAB-SWBM-pZHa-dWKq-ye4n', 'Zue7-5hn7-ewzR-Bl3T-ZHTM', 'zdha-Pr8x-QTmn-WtOq-jPjg',
+            'lDEh-aGlO-6YHA-iwU8-cLPg', 'O84T-tsFf-ud9y-7LyU-z3WD', 'aWwl-B8Nd-pjPj-GJht-oueW', 'bWtk-xJ72-fVVN-a8Uh-7gtP',
+            'QbE8-v4l2-voES-acA8-jFGK', 'QhpP-t1OY-fT3x-2IhI-cS10', 'FsAB-VTCM-G9Ym-blNK-hwx6', 'tTM7-e3a3-G9fM-mkhJ-WV0A',
+            'H2hc-BGP8-XQr6-OppM-WHVb', '0hBy-7hVI-OKGX-pqjZ-vsE4', 'NpzQ-Etqg-IQjX-K7Lg-PiwZ', 'JmML-QpKf-NF8h-CbDU-pUv6',
+            'Ixh4-shfa-DJiG-cTSj-OfKo', '5Lpw-m5cJ-REnw-9uv9-e4qD', 'bqbR-kev1-A9kE-SDi7-mCoM', 'Ul32-o2R0-jjG3-Z3kl-wn2k',
+            'OtKl-orsh-SAhD-bfNL-DKF6', 'zxb0-EUgx-Go8E-TxXC-lcrx', 'rjco-QDxg-h69X-pHOS-HOqw', 'opFi-uSZp-QG2G-3r6w-t7Ep',
+            'unPG-2avy-42k5-SPln-WVoO', 'nR0c-S3ub-UEIH-Kctl-JY2R', 'dZFw-jprR-pFWS-yiDD-X8xU', 'BQ7B-fj2f-Eeis-bZ3Z-y2ni',
+            'GVYu-qgVa-Pplt-qVF2-Chpu', 'zYko-gHEx-Wwez-nXH5-yoBP', 'RAhf-5ViD-9UAm-DFPp-9zbw', 'lR3v-CX2Y-88h7-eOH1-EUeP',
+            'UiLp-bSip-9cz0-FkVy-QwdW', '2MIF-htm5-xjHL-KgwF-AC86', 'fEjd-TwSp-jgu0-PGpq-6IMn', 'JgUA-w03l-MVRw-X6Xb-RK9f',
+            'JXci-2SWw-RCvk-bTLL-Po7X', 'HkxX-VMSN-A3v4-1jlm-6DQb', 'ZajJ-B1Gy-bCHH-KQRk-sV8j', 'wbOH-g0Va-1ryo-GDrq-F1yI',
+            'Gz0C-yaE7-nOIv-7WR2-7lSR', '60we-Ysx7-Ifit-v2d1-P9g2', 'bnxP-2GsD-FDm8-M9UU-rMZ5', 'CyaR-bySH-O3ye-ezDe-zzQk',
+            'WXkQ-CcAr-Tmem-RaWI-jpOn', 'm1Gs-rkqF-6r7A-EEDQ-ZLaY', 'iREe-X66p-BdRW-t8mU-1nFH', '4eE7-vNHY-Hw1A-UopQ-E0GR',
+            'nVBH-V1Yi-nweZ-AT7R-4kFQ', '5w7f-hJ0B-wRpU-vnVV-7W7y', 'pB9M-PDi1-RETg-pcUH-kKED', 'Ml0U-9u3f-u59a-BdYI-yU0M',
+            'O5Zk-ozBp-Wfgc-ZwCh-HNUD', 'HgWW-u8zQ-SEqS-qH38-9sKH', 'iqjH-ApdM-6T6r-89sy-Mqgb', 'kPiF-aW2W-BeZD-0Gd2-BF0v',
+            'ee4Z-r9dn-KvUk-gSqz-ByKr', '0M37-EqER-MTja-MMNp-XzZG', 'c2vi-OwY5-azYg-Yizr-rkMg', 'vLq0-X2at-dLYi-029e-1g1q',
+            'VdFK-z3X7-5Vvn-x0Eg-kHor', 'NQO4-AD15-zDFT-hMVq-tfER', 'O1pR-8TeK-PLyc-V31P-E4Do', 'ain7-d24s-KkLR-KQBd-ZGvK',
+            'CzwK-KBlu-E2r3-VteF-Wxk6', 'u17U-XziJ-ZKIL-QZut-qoa3', 'DlNd-2mIb-b6uf-G5Vc-xTIE', 'i9ZV-Qhji-hT8s-wA6q-iXaq',
+            'aKjc-mtUS-4XPe-griR-3j5I', 'ZhLa-LjAn-aV4U-Px21-W3Iw', 'KzQI-X08a-TGqJ-XceT-6Zn0', 'm641-47LU-8Wbk-LznH-rtPU',
+            'PFHC-xyFS-jvB7-ioO0-0kwi', 'jzzh-0ATH-wjTS-DQcP-3rZ3', 'gpFP-4RGo-f13H-w2bN-5QHE', 'iZcU-UQMW-2ivr-dihK-Xadz',
+            'LCD6-iDXI-Vhgk-ZQ9S-CmDj', '01eg-WeZ4-XjK5-J6A5-p00Y', 'bw4C-SUmX-ZHyv-Sfbo-apsU', 'MqrA-SRe8-K69v-u6vJ-2uSB',
+            'VIjb-SedF-bn53-9xDI-KN8n', '5tQT-E4Co-NC5L-vnWA-A5o6', 'y3ZN-vDKN-ULbs-Qace-Q56w', 'g7ai-02gu-BFLO-j8UT-jybo',
+            'ZZJY-KDWI-nOXR-3nBo-r0QO', '67l7-9sEb-tC6T-QdQy-GQWi', 'rMSK-rZP6-STGV-aOiw-E4zi', 'WoMK-jFVM-wNwl-BRBg-PJre',
+            'SxBY-tzdu-W53p-hDzw-Di1C', 'qu9q-W6Te-z5qy-wOol-kSCh', 'SHF9-cXJC-eact-C1sT-j0xl', 's9lH-zZA7-JAkR-hfUl-BIYM',
+            'xo7X-VYfT-UvU8-MkiY-9i2q', 'nzuU-iWU0-e7Ix-1zCU-cgOp', 'ycsu-eSV2-XVqN-df0S-wMkD', 'Sfgb-a03W-6lTZ-zKhN-9AX6',
+            'ldh3-ukUC-dnzV-08jA-muQB', '8rAn-kJnW-XkXv-S5LT-Tv4h', 'yyyF-2NVp-XFh8-kxIr-eTJL', 'hNEH-8qGE-AxO9-w6q4-2bGP',
+            '49AL-921y-gwKr-qJKd-SGU9', 'IUIp-iEjH-xdda-kNnx-6JS7', 'Sctc-7lA9-9PZq-AxM5-AHVu', 'u7bQ-JkyU-e2l7-5k7x-mNbX',
+            'FJmy-zI7K-Oraa-fKlT-1Vzx', 'isgs-Fk8P-QaKy-R8VD-oHF8', 'MY8B-0k42-qLSX-zc7O-quqa', 'OG9X-SGWf-TAm0-uHeI-W7Oa',
+            'qt6W-xO5E-Zm2n-eyS3-0xL1', '9JE4-qN9E-7wKk-zQr9-ZJmC', 'uIB5-vIsI-7na7-XFDg-rZVf', 'et9D-TQu2-0qYk-PX6c-reTK',
+            'miki-lCHN-fkkH-HXyJ-mYT7', '2Fo3-3pYl-nowJ-Flkf-JATd', '7vMX-U3eD-5O2f-GJ58-zsWl', 'iDpL-6Hsq-k6lq-EPoh-3xxh',
+            'LBNF-mqWL-GAwE-PcrY-dH07', '68vV-v71B-jfLA-J72J-Gg9B', 'VckH-QphS-CNPL-AAQP-7GlJ', 'idK5-awdy-Ky27-wLV8-n10Q',
+            'uVMO-cgGp-b9lY-Paac-Tk8V', 'ujvN-NI0J-mj1O-UW2Q-cPi1', 'bVJk-gumN-dsta-kQiS-eNnm', 'DqpU-F4ld-NHKH-Mgc5-PoF4',
+            '95cs-U1iA-H3Z0-Qs44-mXmE', 'SBAI-8Qgp-Zc2y-LkDA-EtyY', 'qvEX-pa5h-rsYg-1ZeJ-lJEI', 'nf7r-Lh1R-h2cP-yGwg-cZpW',
+            'RNIm-PkiM-XZe3-4sc7-Zp16', 'efSM-Bhd2-LJ2J-5V4c-Gb5d', 'DGP3-H2ll-XwJv-x4Bx-EAoq', 'vohK-4AcM-rgEW-EfCO-YbtF',
+            'Y5om-RYvX-JNn7-2dUN-n19C', 'z3H9-FHXY-WJBI-yCVI-xR84', 'PnsB-aTbm-TayB-cA0f-lozh', 'balJ-TkKL-gpye-pj6M-GJcW',
+            'U4Ke-6q1x-QFM5-E7dc-Estp', 'L8ki-segz-PR29-6AlZ-7PkM', 'XPYi-9Kdh-qoa5-dTUl-SJFG', '4jTz-q11z-hEGi-S2Cb-eBEd',
+            'jMPz-f14q-LZpU-c2Et-c0b9', 'Amia-n4kC-moCA-XLN0-3L7R', 'ydUN-yx7x-fZnA-3xLE-UEKT', 'vlbp-8yHl-WU2U-MUHm-3oD1',
+            'z1jz-QfS5-RVWh-6coj-PgAR', 'yUCQ-0kQV-MNJB-G7Ve-A2x4', '31Jw-AHgC-7eft-DZAX-H0dO', 'fb9P-kjkX-3nW8-CS6n-sXyl',
+            'TjTV-eAOv-vCuT-8zha-ekUk', 'QXMI-A2He-q7Ud-ZPvv-j2uD', 'Tztx-IQn6-1N58-BNXz-GQMt', 'P1cS-WAq2-299K-WQbB-DjOJ',
+            'T1MY-H2Cc-AgER-HFia-n5rL', 'xT5a-dkMs-mUIr-gIqV-CBc9', 'GWnT-E5uJ-J27v-RGfH-rNfQ', 'h6yA-qpuE-gEMT-83mZ-azVU',
+            'vSss-0Q3c-IGEE-lOz4-yCwE', 'XfND-7gox-AQzZ-2vgS-gklS', 'UqJf-BvHT-pAqB-m9bp-gGcO', 'vdV2-zNC7-x6fw-iYxt-IVxp',
+            'Z2pt-3Hmp-WQgS-b1l2-qvOs', 'R6C7-BrWp-CBnU-nrrD-2THV', 'uI9N-8sk1-u6Rm-cPfc-IFwG', 'Vt77-yxmx-m7tn-4aRU-Dxyw',
+        ]
+
         const scannedQRs: { value: string, timestamp: number }[] = JSON.parse(localStorage.getItem('scannedQRs') ?? '[]');
         let currentQR: string | null = null;
         let activeTimeout = setTimeout(() => { }, 0);
