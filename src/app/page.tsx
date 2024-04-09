@@ -326,7 +326,7 @@ export default function Main() {
                 if (fullscreen) {
                     document.exitFullscreen() ?? (document as any).webkitExitFullscreen();
                 } else {
-                    document.documentElement.requestFullscreen() ?? (document.documentElement as any).webkitRequestFullscreen();
+                    (document.documentElement as any).requestFullscreen() ?? (document.documentElement as any).webkitRequestFullscreen();
                 }
             }}><span className='material-symbols-outlined'>{fullscreen ? 'fullscreen_exit' : 'fullscreen'}</span></button>
             <button className={styles.button} onClick={() => setReset(!reset)}><span className='material-symbols-outlined'>replay</span></button>
