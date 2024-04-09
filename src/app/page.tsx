@@ -333,8 +333,8 @@ export default function Main() {
             <button className={styles.button} onClick={() => {
                 if (confirm('Clearing history will allow all previously scanned QRs to be scanned again. This action cannot be undone.\n\nAre you sure you want to clear scanned QR history?')) {
                     localStorage.removeItem('scannedQRs');
-                    setReset(!reset);
                 }
+                setTimeout(() => setReset(!reset), 250);
             }}><span className='material-symbols-outlined'>delete</span></button>
         </div>
         <div className={styles.videoContainer}>
