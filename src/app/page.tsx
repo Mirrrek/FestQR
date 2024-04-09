@@ -16,7 +16,7 @@ export default function Main() {
 
     useEffect(() => {
         const videoElement = document.getElementById(videoElementID);
-        const codeTrackerElement = document.getElementById(codeTrackerElementID);
+        const codeTrackerElement = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? null : document.getElementById(codeTrackerElementID);
         const okPopupElement = document.getElementById(okPopupElementID);
         const errorPopupElement = document.getElementById(errorPopupElementID);
         const errorPopupTextElement = document.getElementById(errorPopupTextElementID);
@@ -25,7 +25,7 @@ export default function Main() {
             throw new Error('Video element not found');
         }
 
-        if (codeTrackerElement === null || !(codeTrackerElement instanceof HTMLDivElement)) {
+        if (codeTrackerElement !== null && !(codeTrackerElement instanceof HTMLDivElement)) {
             throw new Error('Code tracker element not found');
         }
 
@@ -97,27 +97,29 @@ export default function Main() {
 
         const scanner = new QrScanner(videoElement, (result) => {
             if (currentQR === result.data) {
-                codeTrackerElement.style.opacity = '1';
-                const transformMatrix = `matrix3d(${generateTransformMatrix([{
-                    x: result.cornerPoints[0].x - 25,
-                    y: result.cornerPoints[0].y - 25
-                }, {
-                    x: result.cornerPoints[1].x + 25,
-                    y: result.cornerPoints[1].y - 25
-                }, {
-                    x: result.cornerPoints[3].x - 25,
-                    y: result.cornerPoints[3].y + 25
-                }, {
-                    x: result.cornerPoints[2].x + 25,
-                    y: result.cornerPoints[2].y + 25
-                }], videoElement.style.transform.includes('scaleX(-1)'))}`;
-                codeTrackerElement.style.transform = transformMatrix;
-                codeTrackerElement.style.webkitTransform = transformMatrix;
+                if (codeTrackerElement !== null) {
+                    codeTrackerElement.style.opacity = '1';
+                    const transformMatrix = `matrix3d(${generateTransformMatrix([{
+                        x: result.cornerPoints[0].x - 25,
+                        y: result.cornerPoints[0].y - 25
+                    }, {
+                        x: result.cornerPoints[1].x + 25,
+                        y: result.cornerPoints[1].y - 25
+                    }, {
+                        x: result.cornerPoints[3].x - 25,
+                        y: result.cornerPoints[3].y + 25
+                    }, {
+                        x: result.cornerPoints[2].x + 25,
+                        y: result.cornerPoints[2].y + 25
+                    }], videoElement.style.transform.includes('scaleX(-1)'))}`;
+                    codeTrackerElement.style.transform = transformMatrix;
+                    codeTrackerElement.style.webkitTransform = transformMatrix;
+                }
 
                 clearTimeout(activeTimeout);
                 activeTimeout = setTimeout(() => {
                     currentQR = null;
-                    codeTrackerElement.style.opacity = '0';
+                    codeTrackerElement !== null && (codeTrackerElement.style.opacity = '0');
                     errorPopupElement.style.opacity = '0';
                     errorPopupElement.style.pointerEvents = 'none';
                     okPopupElement.style.opacity = '0';
@@ -133,7 +135,7 @@ export default function Main() {
 
             activeTimeout = setTimeout(() => {
                 currentQR = null;
-                codeTrackerElement.style.opacity = '0';
+                codeTrackerElement !== null && (codeTrackerElement.style.opacity = '0');
                 errorPopupElement.style.opacity = '0';
                 errorPopupElement.style.pointerEvents = 'none';
                 okPopupElement.style.opacity = '0';
@@ -306,11 +308,13 @@ export default function Main() {
                 setReset(!reset);
             } else {
                 alert(`An unexpected error occurred.\n\n${event.reason instanceof Error ? `${event.reason.name}: ${event.reason.message}` : event.reason}`);
+                setTimeout(() => setReset(!reset), 250);
             }
         });
 
         window.addEventListener('error', (event) => {
             alert(`An unexpected error occurred.\n\n${event.message}`);
+            setTimeout(() => setReset(!reset), 250);
         });
 
         return () => {
@@ -324,15 +328,15 @@ export default function Main() {
                 if (fullscreen) {
                     document.exitFullscreen() ?? (document as any).webkitExitFullscreen();
                 } else {
-                    document.documentElement.requestFullscreen() ?? (document.documentElement as any).webkitRequestFullscreen();
+                    (document.documentElement as any).requestFullscreen() ?? (document.documentElement as any).webkitRequestFullscreen();
                 }
             }}><span className='material-symbols-outlined'>{fullscreen ? 'fullscreen_exit' : 'fullscreen'}</span></button>
             <button className={styles.button} onClick={() => setReset(!reset)}><span className='material-symbols-outlined'>replay</span></button>
             <button className={styles.button} onClick={() => {
                 if (confirm('Clearing history will allow all previously scanned QRs to be scanned again. This action cannot be undone.\n\nAre you sure you want to clear scanned QR history?')) {
                     localStorage.removeItem('scannedQRs');
-                    setReset(!reset);
                 }
+                setTimeout(() => setReset(!reset), 250);
             }}><span className='material-symbols-outlined'>delete</span></button>
         </div>
         <div className={styles.videoContainer}>
