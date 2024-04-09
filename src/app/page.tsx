@@ -308,11 +308,13 @@ export default function Main() {
                 setReset(!reset);
             } else {
                 alert(`An unexpected error occurred.\n\n${event.reason instanceof Error ? `${event.reason.name}: ${event.reason.message}` : event.reason}`);
+                setTimeout(() => setReset(!reset), 250);
             }
         });
 
         window.addEventListener('error', (event) => {
             alert(`An unexpected error occurred.\n\n${event.message}`);
+            setTimeout(() => setReset(!reset), 250);
         });
 
         return () => {
