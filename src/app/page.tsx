@@ -326,9 +326,17 @@ export default function Main() {
         <div className={styles.controls}>
             <button className={styles.button} onClick={() => {
                 if (fullscreen) {
-                    document.exitFullscreen() ?? (document as any).webkitExitFullscreen();
+                    if ((document as any).exitFullscreen !== undefined) {
+                        (document as any).exitFullscreen();
+                    } else if ((document as any).webkitExitFullscreen !== undefined) {
+                        (document as any).webkitExitFullscreen();
+                    }
                 } else {
-                    (document.documentElement as any).requestFullscreen() ?? (document.documentElement as any).webkitRequestFullscreen();
+                    if ((document.documentElement as any).requestFullscreen !== undefined) {
+                        (document.documentElement as any).requestFullscreen();
+                    } else if ((document.documentElement as any).webkitRequestFullscreen !== undefined) {
+                        (document.documentElement as any).webkitRequestFullscreen();
+                    }
                 }
             }}><span className='material-symbols-outlined'>{fullscreen ? 'fullscreen_exit' : 'fullscreen'}</span></button>
             <button className={styles.button} onClick={() => setReset(!reset)}><span className='material-symbols-outlined'>replay</span></button>
